@@ -144,8 +144,9 @@ r = await callTool("navigate", { url: `${BASE}redirect-external` });
 const stayedLocal = !textOf(r).includes("example.com");
 ok("server 302 to external is blocked", !!r.isError && stayedLocal, textOf(r).slice(0, 120));
 
-// back to a good page, then try exfiltration from page JS
+// back to a good page, let it settle, then try exfiltration from page JS
 await callTool("navigate", { url: BASE });
+await callTool("wait_for", { target: "#btn" });
 r = await callTool("evaluate", { script: "fetch('https://example.com/').then(r=>r.status).catch(e=>'FETCH-BLOCKED:'+e.message)" });
 ok("evaluate fetch to external is blocked", !r.isError && textOf(r).includes("FETCH-BLOCKED"), textOf(r).slice(0, 160));
 r = await callTool("evaluate", { script: "location.href" });
